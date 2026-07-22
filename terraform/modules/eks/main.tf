@@ -357,6 +357,11 @@ resource "aws_eks_cluster" "main" {
     public_access_cidrs     = var.eks_public_access_cidrs
   }
 
+  access_config {
+    authentication_mode                         = "API_AND_CONFIG_MAP"
+    bootstrap_cluster_creator_admin_permissions = true
+  }
+
   # Enable API and audit logs for security visibility (~$1-2/month).
   # "api"           — all requests to the Kubernetes API server
   # "audit"         — who did what (crucial for security incident response)

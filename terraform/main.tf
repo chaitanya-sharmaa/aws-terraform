@@ -29,6 +29,7 @@ module "eks" {
   node_min                = var.eks_node_min
   node_max                = var.eks_node_max
   eks_public_access_cidrs = var.eks_public_access_cidrs
+  eks_admin_arns          = var.eks_admin_arns
 }
 
 
