@@ -152,9 +152,9 @@ resource "aws_cloudfront_distribution" "app" {
 
   # API Cache Behavior (Only needed if S3 is the default origin)
   dynamic "ordered_cache_behavior" {
-    for_each = var.enable_s3_origin ? [1] : []
+    for_each = var.enable_s3_origin ? ["/api/*", "/axon/*", "/sre/*", "/v1/*"] : []
     content {
-      path_pattern     = "/api/*"
+      path_pattern     = ordered_cache_behavior.value
       allowed_methods  = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
       cached_methods   = ["GET", "HEAD"]
       target_origin_id = "VPC-Backend"

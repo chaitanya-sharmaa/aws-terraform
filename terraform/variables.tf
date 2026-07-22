@@ -67,13 +67,13 @@ variable "eks_node_type" {
     t3.micro (1GB) will OOM with Istio enabled.
   EOT
   type        = string
-  default     = "t3.medium"
+  default     = "t3.micro"
 }
 
 variable "eks_node_desired" {
   description = "Desired number of EKS worker nodes (what it tries to maintain)"
   type        = number
-  default     = 1
+  default     = 2
 }
 
 variable "eks_node_min" {

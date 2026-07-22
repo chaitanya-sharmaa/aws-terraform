@@ -71,5 +71,10 @@ output "static_app_cloudfront_id" {
 
 output "sre_dashboard_url" {
   description = "The CloudFront URL for the AI SRE Dashboard"
-  value       = "https://${module.sre_dashboard_cloudfront.cloudfront_domain}"
+  value       = "https://${module.static_app_frontend.cloudfront_domain}/sre/"
+}
+
+output "axon_dashboard_url" {
+  description = "The CloudFront URL for the Axon Dashboard"
+  value       = "https://${module.static_app_frontend.cloudfront_domain}/axon/dashboard"
 }

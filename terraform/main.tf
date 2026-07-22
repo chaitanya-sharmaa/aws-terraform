@@ -56,16 +56,7 @@ module "static_app_frontend" {
   internal_alb_arn = module.eks.internal_alb_arn
 }
 
-# ── SRE Dashboard CloudFront ───────────────────────────────────
-module "sre_dashboard_cloudfront" {
-  source = "./modules/s3-cloudfront"
 
-  project_name     = var.project_name
-  environment      = var.environment
-  app_name         = "sre-dashboard"
-  enable_s3_origin = false
-  internal_alb_arn = module.eks.internal_alb_arn
-}
 
 # ── AI SRE Agent IRSA ──────────────────────────────────────────
 module "ai_sre_irsa" {
