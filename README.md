@@ -13,10 +13,9 @@ This repository manages AWS infrastructure and Kubernetes deployments using Terr
     - `s3-cloudfront`: S3 buckets and CloudFront distributions (e.g., SRE dashboard).
   - **`/environments`**: Environment-specific variable definitions (`dev.tfvars`, `prod.tfvars`).
 - **`/k8s`**: Global Kubernetes configurations, including the Istio Ingress `Gateway` (`gateway.yaml`).
-- **`/apps`**: Application-specific deployments and configurations.
-  - **`dynamic-app`**: Contains `backend` and `k8s` definitions.
-  - **`static-app`**: Contains `frontend`, `backend`, and `k8s` definitions.
-  - **`istio-tgb.yaml`**: AWS TargetGroupBinding connecting the Istio ingress service to an AWS ALB Target Group.
+- **`/apps`**: Application source code and Kubernetes manifests.
+  - **`static-app`**: Contains the `frontend` (deployed to S3), the `backend` (deployed to EKS), and the `k8s` definitions.
+- **`/scripts`**: Automation scripts for building and deploying the applications.
 
 ## Usage
 
@@ -31,16 +30,16 @@ terraform plan -var-file="environments/dev.tfvars"
 terraform apply -var-file="environments/dev.tfvars"
 ```
 
-### 2. Deploy Kubernetes Resources
+### 2. Deploy Applications
 
-Once the EKS cluster is up and your `kubeconfig` is configured, apply the global and application-specific manifests:
+Once the infrastructure is up, use the automated deployment scripts to build the Docker images, push them to ECR, apply the Kubernetes manifests to EKS, upload the static frontend to S3, and invalidate the CloudFront cache.
 
+**For Windows (PowerShell):**
+```powershell
+.\scripts\deploy.ps1
+```
+
+**For Linux / macOS / WSL (Bash):**
 ```bash
-# Apply global Istio Gateway
-kubectl apply -f k8s/gateway.yaml
-
-# Apply the Ingress TargetGroupBinding
-kubectl apply -f apps/istio-tgb.yaml
-
-# (Optional) Deploy specific applications from apps/
+./scripts/deploy.sh
 ```

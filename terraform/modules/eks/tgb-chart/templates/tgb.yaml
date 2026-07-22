@@ -1,0 +1,11 @@
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: istio-ingress-tgb
+  namespace: istio-system
+spec:
+  serviceRef:
+    name: istio-ingress
+    port: 80
+  targetGroupARN: {{ .Values.targetGroupARN }}
+  targetType: ip

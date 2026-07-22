@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: static-app-backend
+  namespace: static-app
+  labels:
+    app: static-app-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: static-app-backend
+  template:
+    metadata:
+      labels:
+        app: static-app-backend
+      annotations:
+        sidecar.istio.io/proxyCPU: "10m"
+        sidecar.istio.io/proxyMemory: "32Mi"
+    spec:
+      containers:
+      - name: static-app-backend
+        image: static-app-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        env:
+        - name: ENVIRONMENT
+          value: "development"
+        envFrom:
+        - secretRef:
+            name: static-app-secrets
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "10Mi"
+          limits:
+            cpu: "200m"
+            memory: "128Mi"
