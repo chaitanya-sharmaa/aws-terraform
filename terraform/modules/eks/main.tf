@@ -527,8 +527,10 @@ resource "aws_iam_openid_connect_provider" "eks" {
 data "aws_caller_identity" "current" {}
 
 locals {
-  # Merge the current caller (who is running Terraform) and any extra admins provided
-  admin_arns = toset(concat([data.aws_caller_identity.current.arn], var.eks_admin_arns))
+  # Only create explicit access entries for EXTRA admins provided in var.eks_admin_arns.
+  # The Terraform runner (creator) already gets an entry automatically because 
+  # bootstrap_cluster_creator_admin_permissions = true.
+  admin_arns = toset(var.eks_admin_arns)
 }
 
 resource "aws_eks_access_entry" "admins" {
