@@ -420,9 +420,9 @@ Content-Type: text/x-shellscript; charset="us-ascii"
 # A managed node group is the recommended way to run worker nodes.
 # AWS handles: node provisioning, patching, AMI updates, drain/cordon.
 resource "aws_eks_node_group" "main" {
-  cluster_name    = aws_eks_cluster.main.name
-  node_group_name = "${local.cluster_name}-nodes"
-  node_role_arn   = aws_iam_role.eks_nodes.arn
+  cluster_name           = aws_eks_cluster.main.name
+  node_group_name_prefix = "${local.cluster_name}-nodes-"
+  node_role_arn          = aws_iam_role.eks_nodes.arn
   subnet_ids      = var.subnet_ids
 
   # EC2 instance type for worker nodes
