@@ -67,3 +67,9 @@ variable "eks_public_access_cidrs" {
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
+
+variable "eks_admin_arns" {
+  type    = list(string)
+  default = []
+}
+

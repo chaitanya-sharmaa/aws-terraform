@@ -105,3 +105,9 @@ variable "rds_deletion_protection" {
   type        = bool
   default     = false
 }
+
+variable "eks_admin_arns" {
+  type    = list(string)
+  default = []
+}
+

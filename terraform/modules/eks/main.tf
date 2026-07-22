@@ -515,3 +515,31 @@ resource "aws_iam_openid_connect_provider" "eks" {
   thumbprint_list = [data.tls_certificate.eks.certificates[0].sha1_fingerprint]
   url             = aws_eks_cluster.main.identity[0].oidc[0].issuer
 }
+
+# ════════════════════════════════════════════════════════════
+# EKS ACCESS ENTRIES (Fixes "Not authorized" in AWS Console)
+# ════════════════════════════════════════════════════════════
+data "aws_caller_identity" "current" {}
+
+locals {
+  # Merge the current caller (who is running Terraform) and any extra admins provided
+  admin_arns = toset(concat([data.aws_caller_identity.current.arn], var.eks_admin_arns))
+}
+
+resource "aws_eks_access_entry" "admins" {
+  for_each      = local.admin_arns
+  cluster_name  = aws_eks_cluster.main.name
+  principal_arn = each.value
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "admins" {
+  for_each      = local.admin_arns
+  cluster_name  = aws_eks_cluster.main.name
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+  principal_arn = aws_eks_access_entry.admins[each.key].principal_arn
+
+  access_scope {
+    type = "cluster"
+  }
+}

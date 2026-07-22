@@ -26,3 +26,7 @@ eks_public_access_cidrs = ["0.0.0.0/0"] # Open for dev convenience
 
 # RDS — no deletion protection in dev (allows `terraform destroy` freely)
 rds_deletion_protection = false
+
+eks_admin_arns = [
+  "arn:aws:iam::688365519474:root"
+]
