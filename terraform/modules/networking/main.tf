@@ -101,6 +101,10 @@ resource "aws_subnet" "public" {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/elb"                      = "1" # For internet-facing LBs
   }
+
+  depends_on = [
+    aws_internet_gateway.main
+  ]
 }
 
 # ── Private Subnets ───────────────────────────────────────────
