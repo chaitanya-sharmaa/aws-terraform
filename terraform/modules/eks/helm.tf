@@ -35,6 +35,8 @@ resource "helm_release" "aws_load_balancer_controller" {
     value = "1"
   }
 
+  wait = true
+
   depends_on = [aws_eks_node_group.main]
 }
 
@@ -47,6 +49,7 @@ resource "helm_release" "istio_base" {
   namespace        = "istio-system"
   version          = "1.22.2" # Pinned — update deliberately
   create_namespace = true
+  wait             = true
 
   depends_on = [helm_release.aws_load_balancer_controller]
 }
@@ -79,6 +82,8 @@ resource "helm_release" "istiod" {
     name  = "pilot.replicaCount"
     value = "1"
   }
+
+  wait = true
 
   depends_on = [helm_release.istio_base]
 }
@@ -122,6 +127,8 @@ resource "helm_release" "istio_ingress" {
     value = "64Mi"
   }
 
+  wait = true
+
   depends_on = [helm_release.istiod]
 }
 
@@ -154,6 +161,8 @@ resource "helm_release" "metrics_server" {
     name  = "resources.requests.memory"
     value = "50Mi"
   }
+
+  wait = true
 
   depends_on = [aws_eks_node_group.main, helm_release.aws_load_balancer_controller]
 }
