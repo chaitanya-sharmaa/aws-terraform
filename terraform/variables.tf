@@ -73,7 +73,7 @@ variable "eks_node_type" {
 variable "eks_node_desired" {
   description = "Desired number of EKS worker nodes (what it tries to maintain)"
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "eks_node_min" {
@@ -85,7 +85,7 @@ variable "eks_node_min" {
 variable "eks_node_max" {
   description = "Maximum number of EKS worker nodes (autoscaler won't go above this)"
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "eks_public_access_cidrs" {
@@ -110,4 +110,3 @@ variable "eks_admin_arns" {
   type    = list(string)
   default = []
 }
-

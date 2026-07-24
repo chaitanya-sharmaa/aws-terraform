@@ -15,9 +15,9 @@ vpc_cidr = "10.0.0.0/16"
 # EKS — t3.small is used because the AWS account restricts non-free-tier/larger instances (t3.medium blocked).
 eks_kubernetes_version = "1.30"
 eks_node_type          = "t3.micro"
-eks_node_desired       = 3
+eks_node_desired       = 1
 eks_node_min           = 1
-eks_node_max           = 3
+eks_node_max           = 1
 
 # EKS API server access — SECURITY: replace with your IP for better protection
 # Find your IP: curl ifconfig.me

@@ -424,21 +424,14 @@ Content-Type: text/x-shellscript; charset="us-ascii"
 
 # A managed node group is the recommended way to run worker nodes.
 # AWS handles: node provisioning, patching, AMI updates, drain/cordon.
-resource "aws_eks_node_group" "main" {
+# System Nodes (for Kube-System, Istio, etc)
+resource "aws_eks_node_group" "system_nodes" {
   cluster_name           = aws_eks_cluster.main.name
-  node_group_name_prefix = "${local.cluster_name}-nodes-"
+  node_group_name_prefix = "${local.cluster_name}-system-nodes-"
   node_role_arn          = aws_iam_role.eks_nodes.arn
-  subnet_ids      = var.subnet_ids
+  subnet_ids             = var.subnet_ids
+  instance_types         = [var.node_type]
 
-  # EC2 instance type for worker nodes
-  # t3.medium: 2 vCPU, 4GB RAM — recommended for Dynamic App + Istio
-  # Memory Breakdown (approx):
-  # Kube-system daemons:    ~400MB
-  # Dynamic App backend:    ~512MB
-  # Available headroom:     ~3GB
-  instance_types = [var.node_type]
-
-  # Autoscaling configuration
   scaling_config {
     desired_size = var.node_desired
     min_size     = var.node_min
@@ -450,12 +443,10 @@ resource "aws_eks_node_group" "main" {
     version = aws_launch_template.main.latest_version
   }
 
-  # How to update nodes (ROLLING_UPDATE = update one at a time)
   update_config {
     max_unavailable = 1
   }
 
-  # IMPORTANT: Node group must wait for IAM policies to be attached
   depends_on = [
     aws_iam_role_policy_attachment.eks_worker_node,
     aws_iam_role_policy_attachment.eks_cni,
@@ -463,7 +454,95 @@ resource "aws_eks_node_group" "main" {
   ]
 
   tags = {
-    Name = "${local.cluster_name}-node-group"
+    Name = "${local.cluster_name}-system-node-group"
+  }
+}
+
+# SRE Nodes
+resource "aws_eks_node_group" "sre_nodes" {
+  cluster_name           = aws_eks_cluster.main.name
+  node_group_name_prefix = "${local.cluster_name}-sre-nodes-"
+  node_role_arn          = aws_iam_role.eks_nodes.arn
+  subnet_ids             = var.subnet_ids
+  instance_types         = [var.node_type]
+
+  scaling_config {
+    desired_size = var.node_desired
+    min_size     = var.node_min
+    max_size     = var.node_max
+  }
+
+  taint {
+    key    = "workload"
+    value  = "sre"
+    effect = "NO_SCHEDULE"
+  }
+
+  labels = {
+    "workload" = "sre"
+  }
+
+  launch_template {
+    id      = aws_launch_template.main.id
+    version = aws_launch_template.main.latest_version
+  }
+
+  update_config {
+    max_unavailable = 1
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.eks_worker_node,
+    aws_iam_role_policy_attachment.eks_cni,
+    aws_iam_role_policy_attachment.eks_ecr,
+  ]
+
+  tags = {
+    Name = "${local.cluster_name}-sre-node-group"
+  }
+}
+
+# App Nodes
+resource "aws_eks_node_group" "app_nodes" {
+  cluster_name           = aws_eks_cluster.main.name
+  node_group_name_prefix = "${local.cluster_name}-app-nodes-"
+  node_role_arn          = aws_iam_role.eks_nodes.arn
+  subnet_ids             = var.subnet_ids
+  instance_types         = [var.node_type]
+
+  scaling_config {
+    desired_size = var.node_desired
+    min_size     = var.node_min
+    max_size     = var.node_max
+  }
+
+  taint {
+    key    = "workload"
+    value  = "app"
+    effect = "NO_SCHEDULE"
+  }
+
+  labels = {
+    "workload" = "app"
+  }
+
+  launch_template {
+    id      = aws_launch_template.main.id
+    version = aws_launch_template.main.latest_version
+  }
+
+  update_config {
+    max_unavailable = 1
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.eks_worker_node,
+    aws_iam_role_policy_attachment.eks_cni,
+    aws_iam_role_policy_attachment.eks_ecr,
+  ]
+
+  tags = {
+    Name = "${local.cluster_name}-app-node-group"
   }
 }
 

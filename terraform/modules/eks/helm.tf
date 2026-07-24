@@ -37,7 +37,7 @@ resource "helm_release" "aws_load_balancer_controller" {
 
   wait = true
 
-  depends_on = [aws_eks_node_group.main]
+  depends_on = [aws_eks_node_group.system_nodes]
 }
 
 # ── Istio Base ──────────────────────────────────────────────
@@ -164,5 +164,5 @@ resource "helm_release" "metrics_server" {
 
   wait = true
 
-  depends_on = [aws_eks_node_group.main, helm_release.aws_load_balancer_controller]
+  depends_on = [aws_eks_node_group.system_nodes, helm_release.aws_load_balancer_controller]
 }
